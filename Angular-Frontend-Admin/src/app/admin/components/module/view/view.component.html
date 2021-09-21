@@ -1,0 +1,59 @@
+<ng4-loading-spinner [threshold]="1" [template]="template" [timeout]="10000000" [zIndex]="999"> </ng4-loading-spinner>
+<div *ngIf="!pageLoad" class="row">
+  <div class="col-md-12">
+    <div class="tile">
+      <div class="row">
+        <div class="col-lg-12">
+          <div class="tile-title-w-btn">
+            <h3 class="title">View {{title}}</h3>
+            <p><a class="btn btn-secondary icon-btn btn-sm" data-toggle="tooltip" title="Back"
+                [routerLink]="[parent_uri]"><i class="fa fa-arrow-left"></i></a></p>
+          </div>
+          <div class="tile-body">
+            <div class="row">
+              <div *ngFor="let column of columns | columnFilter : {view : true}"
+                class="{{column.type != 'password'? (section_data[column.field] ? 'form-group col-md-6' : '') :''}}">
+                <div
+                  *ngIf="(column.type == 'textbox' || column.type == 'textarea' || column.type == 'email' || column.type == 'readonly' ||  column.type == 'radio' ||  column.type =='selectbox'||  column.type =='autocomplete' ||  column.type =='checkbox' || column.type =='custom' || column.type =='tags' || column.type =='datepicker' )&& section_data[column.field] ">
+                  <label class="control-label"><strong>{{column.label}}</strong></label>
+                  <p>
+                    {{(column.type == 'tags' ||  column.type =='selectbox' || column.type =='checkbox' ||  column.type =='radio' ||  column.type =='autocomplete')?(section_data[column.field] | dynamicSource:section_data[column.field]:column.source:column.type):section_data[column.field]}}
+                  </p>
+                </div>
+                <div *ngIf="column.type == 'image' && section_data[column.field]">
+                  <label class="control-label"><strong>{{column.label}}</strong></label>
+                  <div class="row">
+                    <div class="col-md-4" *ngFor="let i of section_data[column.field] | toArray"
+                      style="padding-top:15px;text-align: center;">
+                      <img [src]="i | getFile:'id' | async" width="132px" height="90px">
+                    </div>
+                  </div>
+                </div>
+                <div *ngIf="column.type == 'file' && section_data[column.field]">
+                  <label class="control-label"><strong>{{column.label}}</strong></label>
+                  <div class="row">
+                    <div class="col-md-4" *ngFor="let i of section_data[column.field] | toArray;let rowIndex=index"
+                      style="padding-top:15px;text-align: center;">
+                      <a target="blank" [href]="i | getFile:'id' | async">File{{rowIndex+1}}</a>
+                    </div>
+                  </div>
+                </div>
+                <div *ngIf="column.type == 'map' && section_data[column.field]">
+                  <agm-map [latitude]='section_data[column.field] | getMapDetails:"lat"'
+                    [longitude]='section_data[column.field] | getMapDetails:"lng"'>
+                    <agm-marker [latitude]='section_data[column.field] | getMapDetails:"lat"'
+                      [longitude]='section_data[column.field] | getMapDetails:"lng"'></agm-marker>
+                  </agm-map>
+                  <p>{{section_data[column.field] | getMapDetails:"address"}}</p>
+                </div>
+                <div *ngIf="column.type == 'texteditor' && section_data[column.field]">
+                  <div [innerHTML]="section_data[column.field]"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

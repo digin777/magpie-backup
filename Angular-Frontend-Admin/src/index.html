@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Magpie</title>
+  <base href="/">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">  
+  <link type="text/css" rel="stylesheet" href="assets/themes/admin/default/css/main.css"/>
+  <link type="text/css" rel="stylesheet" href="assets/themes/admin/default/css/driver.min.css"/>
+  <link type="text/css" rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"/>
+  <script type="text/javascript" src="assets/themes/admin/default/js/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="assets/themes/admin/default/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="assets/themes/admin/default/js/select2.min.js"></script>
+  <script type="text/javascript" src="assets/themes/admin/default/js/moment.min.js"></script>
+  <script type="text/javascript" src="assets/themes/admin/default/js/pace.min.js"></script>
+  <script type="text/javascript" src="assets/themes/admin/default/js/bootstrap-notify.min.js"></script>
+  <script type="text/javascript" src="assets/themes/admin/default/js/bootstrap-datepicker.min.js"></script>
+  <script type="text/javascript" src="assets/themes/admin/default/js/sweetalert.min.js"></script>
+  <script type="text/javascript" src="assets/themes/admin/default/js/chart.min.js"></script>
+  <script type="text/javascript" src="assets/themes/admin/default/js/driver.min.js"></script>
+  <script type="text/javascript" src="https://maps.google.com/maps/api/js?sensor=true&key=AIzaSyBcigPmyW-A993UDs9v6iejN4FB-h0Pi3k&libraries=places&language=en-US"></script>
+  <script src="assets/themes/admin/default/js/custom.js"></script>
+  <script>
+    var defaul_theme = "default";
+    var global = global || window;
+  </script>
+  <script>
+  
+      // var current_segment = window.location.pathname.split('/')[1] == 'admin' || window.location.pathname.split('/')[1] == ''?'admin':'site';
+       var current_segment = window.location.pathname.split('/')[1] == 'admin'?'admin':'site';
+       localStorage.setItem("current_segment",current_segment);
+     
+   </script>
+</head>
+<body class="app sidebar-mini rtl">
+	
+  <app-root></app-root>
+
+
+</body> 
+</html>

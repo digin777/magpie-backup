@@ -1,0 +1,196 @@
+<ng4-loading-spinner [threshold]="1" [template]="template" [timeout]="10000000" [zIndex]="999"> </ng4-loading-spinner>
+<div *ngIf="!pageLoad" class="row user">
+  <div class="col-md-3">
+    <div class="tile p-0">
+      <ul class="nav flex-column nav-tabs user-tabs">
+        <li class="nav-item"><a data-toggle="tooltip" title="My Account" class="nav-link active" href="#user-account"
+            data-toggle="tab">My Account</a></li>
+        <li class="nav-item"><a data-toggle="tooltip" title="Change Password" class="nav-link"
+            href="#user-change-password" data-toggle="tab">Change Password</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="col-md-9">
+    <div class="tab-content">
+      <div class="tab-pane active" id="user-account">
+        <div class="tile user-settings">
+          <h4 class="line-head">My Account</h4>
+          <form class="profile-edit-form" [formGroup]="profileEditForm" novalidate>
+            <div class="row">
+              <div *ngFor="let column of columns;let j = index" [ngClass]="column.type != 'hidden'?'col-md-8':''">
+                <div *ngIf="column.type == 'textbox'">
+                  <label class="control-label">{{column.label}}<span *ngIf="column.validations[0].required == 'true'"
+                      class="required_field">*</span></label>
+                  <input *ngIf="column.unique == undefined || column.unique == 'false'"
+                    class="form-control {{(profileEditForm.controls[column.field].invalid && (profileEditForm.controls[column.field].dirty || profileEditForm.controls[column.field].touched))?'is-invalid':profileEditForm.controls[column.field].valid?'is-valid':''}}"
+                    type="text" tabindex="{{j+1}}" formControlName="{{column.field}}" #{{column.field}}
+                    [(ngModel)]="section_data[column.field]" placeholder="Enter your {{column.label | lowercase}}">
+                  <input *ngIf="column.unique == 'true'" (input)="duplicateExist($event.target.value, column.field)"
+                    class="form-control {{(profileEditForm.controls[column.field].invalid && (profileEditForm.controls[column.field].dirty || profileEditForm.controls[column.field].touched))?'is-invalid':profileEditForm.controls[column.field].valid?(duplicates[column.field]?'is-invalid':'is-valid'):''}}"
+                    type="text" tabindex="{{j+1}}" formControlName="{{column.field}}" #{{column.field}}
+                    [(ngModel)]="section_data[column.field]" placeholder="Enter your {{column.label | lowercase}}">
+                  <div
+                    *ngIf="profileEditForm.controls[column.field].valid && (profileEditForm.controls[column.field].dirty || profileEditForm.controls[column.field].touched) && duplicates[column.field]"
+                    class="form-control-feedback"> {{column.label}} already exist.</div>
+                  <div
+                    *ngIf="profileEditForm.controls[column.field].invalid && (profileEditForm.controls[column.field].dirty || profileEditForm.controls[column.field].touched) && profileEditForm.controls[column.field].errors.required"
+                    class="form-control-feedback">
+                    {{column.label.charAt(0).toUpperCase() + column.label.substr(1).toLowerCase()}} is required.</div>
+                  <div
+                    *ngIf="profileEditForm.controls[column.field].invalid && (profileEditForm.controls[column.field].dirty || profileEditForm.controls[column.field].touched) && profileEditForm.controls[column.field].errors.pattern"
+                    class="form-control-feedback">
+                    {{column.label.charAt(0).toUpperCase() + column.label.substr(1).toLowerCase()}} is not valid.
+                  </div>
+                </div>
+                <div *ngIf="column.type == 'email'">
+                  <label class="control-label">{{column.label}}<span *ngIf="column.validations[0].required == 'true'"
+                      class="required_field">*</span></label>
+                  <input type="email" *ngIf="column.unique == undefined || column.unique == 'false'"
+                    class="form-control {{(profileEditForm.controls[column.field].invalid && (profileEditForm.controls[column.field].dirty || profileEditForm.controls[column.field].touched))?'is-invalid':profileEditForm.controls[column.field].valid?'is-valid':''}}"
+                    tabindex="{{j+1}}" formControlName="{{column.field}}" #{{column.field}}
+                    [(ngModel)]="section_data[column.field]" placeholder="Enter your {{column.label | lowercase}}" />
+                  <input type="email" *ngIf="column.unique == 'true'"
+                    class="form-control {{(profileEditForm.controls[column.field].invalid && (profileEditForm.controls[column.field].dirty || profileEditForm.controls[column.field].touched))?'is-invalid':profileEditForm.controls[column.field].valid?(duplicates[column.field]?'is-invalid':'is-valid'):''}}"
+                    tabindex="{{j+1}}" (input)="duplicateExist($event.target.value, column.field)"
+                    formControlName="{{column.field}}" #{{column.field}} [(ngModel)]="section_data[column.field]"
+                    placeholder="Enter your {{column.label | lowercase}}" />
+                  <div
+                    *ngIf="profileEditForm.controls[column.field].invalid && (profileEditForm.controls[column.field].dirty || profileEditForm.controls[column.field].touched) && profileEditForm.controls[column.field].errors.required"
+                    class="form-control-feedback">
+                    {{column.label.charAt(0).toUpperCase() + column.label.substr(1).toLowerCase()}} is required.</div>
+                  <div
+                    *ngIf="profileEditForm.controls[column.field].valid && (profileEditForm.controls[column.field].dirty || profileEditForm.controls[column.field].touched) && duplicates[column.field]"
+                    class="form-control-feedback"> {{column.label}} already exist.</div>
+                  <div
+                    *ngIf="profileEditForm.controls[column.field].invalid && (profileEditForm.controls[column.field].dirty || profileEditForm.controls[column.field].touched) && profileEditForm.controls[column.field].errors.pattern"
+                    class="form-control-feedback">
+                    {{column.label.charAt(0).toUpperCase() + column.label.substr(1).toLowerCase()}} is not valid.
+                  </div>
+                </div>
+                <div *ngIf="column.type == 'hidden' || column.type == 'password'">
+                  <input type="hidden" class="form-control" formControlName="{{column.field}}" #{{column.field}}
+                    [(ngModel)]="section_data[column.field]" />
+                </div>
+                <div *ngIf="column.type == 'selectbox'  && column.field != 'roles_id' && column.field != 'status'">
+                  <label class="control-label">{{column.label}}<span *ngIf="column.validations[0].required == 'true'"
+                      class="required_field">*</span></label>
+                  <select
+                    class="form-control {{column.class}} {{(profileEditForm.controls[column.field].invalid && (profileEditForm.controls[column.field].dirty || profileEditForm.controls[column.field].touched))?'is-invalid':profileEditForm.controls[column.field].valid?'is-valid':''}}"
+                    formControlName="{{column.field}}" #{{column.field}} [(ngModel)]="section_data[column.field]"
+                    tabindex="{{j+1}}">
+                    <option *ngFor="let col of column.source" value="{{col.value}}"> {{col.label}}</option>
+                  </select>
+                  <div
+                    *ngIf="profileEditForm.controls[column.field].invalid && (profileEditForm.controls[column.field].dirty || profileEditForm.controls[column.field].touched) && profileEditForm.controls[column.field].errors.required"
+                    class="form-control-feedback"> {{column.validations_msg[0].required}}</div>
+                </div>
+                <div *ngIf="column.type == 'image' ">
+                  <label class="control-label">{{column.label}}<span *ngIf="column.validations[0].required == 'true'"
+                      class="required_field">*</span></label>
+                  <input
+                    class="form-control {{(profileEditForm.controls[column.field].invalid && (profileEditForm.controls[column.field].dirty || profileEditForm.controls[column.field].touched))?'is-invalid':profileEditForm.controls[column.field].valid?'is-valid':''}}"
+                    type="file" tabindex="{{j+1}}" (change)="onFileChangeEvent($event,column.field)"
+                    multiple="{{column.multiple == 'true'?'multiple':''}}"
+                    placeholder="Enter your {{column.label | lowercase}}">
+                  <div
+                    *ngIf="profileEditForm.controls[column.field].invalid && (profileEditForm.controls[column.field].dirty || profileEditForm.controls[column.field].touched) && profileEditForm.controls[column.field].errors.required"
+                    class="form-control-feedback">
+                    {{column.label.charAt(0).toUpperCase() + column.label.substr(1).toLowerCase()}} is required.</div>
+                  <div
+                    *ngIf="profileEditForm.controls[column.field].invalid &&  profileEditForm.controls[column.field].errors.extension"
+                    class="form-control-feedback">
+                    {{column.label.charAt(0).toUpperCase() + column.label.substr(1).toLowerCase()}} only accept
+                    jpg,jpeg,png.
+                  </div>
+                  <div
+                    *ngIf="profileEditForm.controls[column.field].invalid &&  profileEditForm.controls[column.field].errors.maxSize"
+                    class="form-control-feedback">
+                    {{column.label.charAt(0).toUpperCase() + column.label.substr(1).toLowerCase()}} size less than 1Mb.
+                  </div>
+                  <input type="hidden" formControlName="{{column.field}}" #{{column.field}}
+                    [(ngModel)]="section_data[column.field]">
+                  <div class="row">
+                    <div class="col-md-4" *ngFor="let i of section_data[column.field] | toArray"
+                      style="padding-top:15px;text-align: center;">
+                      <img *ngIf="!isImgLoaded" src="assets/themes/admin/default/images/placeholder.user.png"
+                        width="132px" height="90px">
+                      <img [hidden]="!isImgLoaded" [src]="i | getFile:'id' | async" (load)="isImgLoaded = true"
+                        width="132px" height="90px">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="tile-footer">
+              <button (click)="accountUpdate()" data-toggle="tooltip" title="Submit"
+                [disabled]="profileEditForm.invalid || duplicateItemExist" class="btn btn-primary"
+                tabindex="{{field_length+1}}"><i class="fa fa-fw fa-lg fa-check-circle"></i>Submit</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="tab-pane fade" id="user-change-password">
+        <div class="tile user-settings">
+          <h4 class="line-head">Change Password</h4>
+          <form class="change-password-form" [formGroup]="changePasswordForm" novalidate>
+            <div class="row">
+              <div class="col-md-8">
+                <label class="control-label">Current Password<span class="required_field">*</span></label>
+                <input [type]="showPassword.current ? 'text' : 'password'" formControlName="current_password"
+                  #current_password [(ngModel)]="change_password_data.current_password"
+                  class="form-control {{(changePasswordForm.controls['current_password'].invalid && (changePasswordForm.controls['current_password'].dirty || changePasswordForm.controls['current_password'].touched))?'is-invalid':changePasswordForm.controls['current_password'].valid?'is-valid':''}}"
+                  tabindex="1" placeholder="Enter your current password" />
+                <a href="javascript:void(0)" (click)="showPassword.current = !showPassword.current"
+                  class="search_btt view-btn-eye">
+                  <i *ngIf="!showPassword.current" class="fa fa-eye" aria-hidden="true"></i>
+                  <i *ngIf="showPassword.current" class="fa fa-eye-slash" aria-hidden="true"></i>
+                </a>
+                <div
+                  *ngIf="changePasswordForm.controls['current_password'].invalid && (changePasswordForm.controls['current_password'].dirty || changePasswordForm.controls['current_password'].touched) && changePasswordForm.controls['current_password'].errors.required"
+                  class="form-control-feedback"> Current Password is required.</div>
+              </div>
+              <div class="col-md-8">
+                <label class="control-label">New Password<span class="required_field">*</span></label>
+                <input [type]="showPassword.new ? 'text' : 'password'" formControlName="new_password" #new_password
+                  [(ngModel)]="change_password_data.new_password"
+                  class="form-control {{(changePasswordForm.controls['new_password'].invalid && (changePasswordForm.controls['new_password'].dirty || changePasswordForm.controls['new_password'].touched))?'is-invalid':changePasswordForm.controls['new_password'].valid?'is-valid':''}}"
+                  tabindex="1" placeholder="Enter your new password" />
+                <a href="javascript:void(0)" (click)="showPassword.new = !showPassword.new"
+                  class="search_btt view-btn-eye">
+                  <i *ngIf="!showPassword.new" class="fa fa-eye" aria-hidden="true"></i>
+                  <i *ngIf="showPassword.new" class="fa fa-eye-slash" aria-hidden="true"></i>
+                </a>
+                <div
+                  *ngIf="changePasswordForm.controls['new_password'].invalid && (changePasswordForm.controls['new_password'].dirty || changePasswordForm.controls['new_password'].touched) && changePasswordForm.controls['new_password'].errors.required"
+                  class="form-control-feedback"> New Password is required.</div>
+              </div>
+              <div class="col-md-8">
+                <label class="control-label">Confirm Password<span class="required_field">*</span></label>
+                <input [type]="showPassword.confirm ? 'text' : 'password'" formControlName="confirm_password"
+                  #confirm_password [(ngModel)]="change_password_data.confirm_password"
+                  class="form-control {{(changePasswordForm.controls['confirm_password'].invalid && (changePasswordForm.controls['confirm_password'].dirty || changePasswordForm.controls['confirm_password'].touched))?'is-invalid':changePasswordForm.controls['confirm_password'].valid?'is-valid':''}}"
+                  tabindex="2" placeholder="Confirm password" />
+                <a href="javascript:void(0)" (click)="showPassword.confirm = !showPassword.confirm"
+                  class="search_btt view-btn-eye">
+                  <i *ngIf="!showPassword.confirm" class="fa fa-eye" aria-hidden="true"></i>
+                  <i *ngIf="showPassword.confirm" class="fa fa-eye-slash" aria-hidden="true"></i>
+                </a>
+                <div
+                  *ngIf="changePasswordForm.controls['confirm_password'].invalid && (changePasswordForm.controls['confirm_password'].dirty || changePasswordForm.controls['confirm_password'].touched) && changePasswordForm.controls['confirm_password'].errors.required"
+                  class="form-control-feedback"> Confirm password is required.</div>
+                <div class="form-control-feedback"
+                  *ngIf="changePasswordForm.controls['confirm_password'].invalid && (changePasswordForm.controls['confirm_password'].dirty || changePasswordForm.controls['confirm_password'].touched) && changePasswordForm.controls['confirm_password'].errors.MatchPassword">
+                  Password not match</div>
+              </div>
+            </div>
+            <div class="tile-footer">
+              <button (click)="changePassword()" data-toggle="tooltip" title="Submit"
+                [disabled]="changePasswordForm.pristine ||  changePasswordForm.invalid" tabindex="3"
+                class="btn btn-primary"><i class="fa fa-fw fa-lg fa-check-circle"></i>Submit</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

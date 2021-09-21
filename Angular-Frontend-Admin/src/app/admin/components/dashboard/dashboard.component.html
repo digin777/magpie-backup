@@ -1,0 +1,63 @@
+<ng4-loading-spinner [threshold]="1" [template]="template" [timeout]="10000000" [zIndex]="999"> </ng4-loading-spinner>
+<div class="row">
+  <div *ngFor="let data of dashboard_config;let i = index" class="{{data.entity_config['class']}}">
+    <a [routerLink]="[data.entity_config['url']]">
+      <div *ngIf="data.entity_type === 'counter'"
+        class="widget-small {{data.entity_config['background_color']}} coloured-icon"><i
+          class="icon fa {{data.entity_config['icon']}} fa-3x"></i>
+        <div class="info">
+          <h4>{{data.entity_display_name}}</h4>
+          <p><b>{{data.entity_config['value']}}</b></p>
+        </div>
+      </div>
+    </a>
+    <div class="tile" *ngIf="data.entity_type === 'pie_chart'">
+      <h3 class="tile-title">{{data.entity_display_name}}</h3>
+      <div class="embed-responsive embed-responsive-16by9">
+        <canvas chart [chartType]="pie" [chartData]="data.entity_config['value']" class="embed-responsive-item"
+          id="pieChart_{{i}}"></canvas>
+      </div>
+    </div>
+    <div class="tile" *ngIf="data.entity_type === 'line_chart'">
+      <h3 class="tile-title">{{data.entity_display_name}}</h3>
+      <div class="embed-responsive embed-responsive-16by9">
+        <canvas chart [chartType]="line" [chartData]="data.entity_config['value']" class="embed-responsive-item"
+          id="lineChart_{{i}}"></canvas>
+      </div>
+    </div>
+    <div class="tile" *ngIf="data.entity_type === 'list'" [hidden]="!data.menus_actions['Index']">
+      <h3 class="tile-title">{{data.entity_display_name}}</h3>
+      <div class="clearfix"></div>
+      <div *ngIf="data.entity_config.value['length'] > 0" class="table-responsive">
+        <table class="table table-bordered dataTable">
+          <thead>
+            <tr>
+              <th *ngFor="let entry of (data.entity_config['value'][0] | keys) ;let i = index " id="columnOrder{{i}}">
+                <strong>{{entry.key == '_id'?'#':entry.key }}</strong></th>
+              <th [hidden]="!data.menus_actions['Edit'] && !data.menus_actions['View']"><strong>Actions</strong></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let entry of (data.entity_config['value'] | keys);let i = index">
+              <td *ngFor="let column of (data.entity_config['value'][entry.key] | keys)">
+                {{column.key == '_id'?i+1:column.value }}
+              </td>
+              <td [hidden]="!data.menus_actions['Edit'] && !data.menus_actions['View']">
+                <a data-toggle="tooltip" title="Edit"
+                  [routerLink]="['/admin/'+data.entity_config['routes']+'/edit', data.entity_config['value'][entry.key]['_id']]"
+                  class="btn btn-info btn-sm" [hidden]="!data.menus_actions['Edit']">&nbsp;<i
+                    class="fa fa-edit"></i></a>&nbsp;&nbsp;
+                <a data-toggle="tooltip" title="View"
+                  [routerLink]="['/admin/'+data.entity_config['routes']+'/view', data.entity_config['value'][entry.key]['_id']]"
+                  class="btn btn-success btn-sm" [hidden]="!data.menus_actions['View']">&nbsp;<i
+                    class="fa fa-eye"></i></a>&nbsp;&nbsp;
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <span *ngIf="data.entity_config.value['length'] <= 0" class="table-responsive no-data-found">No data found</span>
+      <a *ngIf="data.entity_config.value['length'] > 0" [routerLink]="[data.entity_config['url']]">View All</a>
+    </div>
+  </div>
+</div>
